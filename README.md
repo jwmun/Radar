@@ -12,7 +12,7 @@ Python3, Numpy, Tensorflow
 
 * Our dataset can be downloaded from the below link
 
-* FMCW data [link](https://drive.google.com/open?id=18s95iyC_ZovvPxSe75rgdS2Q8LFSE_j8)
+* FMCW data [link](https://drive.google.com/file/d/18s95iyC_ZovvPxSe75rgdS2Q8LFSE_j8/view?usp=sharing)
 
 * MIMO
 
