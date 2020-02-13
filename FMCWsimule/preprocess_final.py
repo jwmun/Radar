@@ -13,13 +13,11 @@ def make_data(filepath):
 
 
 def make_input():
-    #files = sorted(glob.glob('../data/HighNoise_Input/input_signal*'))
     files = sorted(glob.glob('../data/NormalNoise_Input/signal_ta*'))
     return files
 
 
 def make_label():
-    #files = sorted(glob.glob('../data/HighNoise_Label/label_signal*'))
     files = sorted(glob.glob('../data/NormalNoise_Label/no_interfer_signal_*'))
     return files
 
