@@ -37,7 +37,7 @@ def make_inputs_and_labels(input_path, label_path):
 
 
 class data():
-    def __init__(self, train=True):
+    def __init__(self, use_median_filter=True, train=True)::
         self.input_path = make_input()
         self.label_path = make_label()
         self.input_path = self.input_path[:1000]
