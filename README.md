@@ -17,14 +17,16 @@ Python3, Numpy, Tensorflow
 * MIMO
 
 ## Running code
-
+The final deep learning output needs to be denormalized to return to its original state since the signal strength has changed due to the normalization process in preprocess.py. Refer to the output file of each FMCW and OFDM folder to denormalize.
 ### FMCW
 
-test
+```
+Python3 run_transformer.py
+```
 ### MIMO
-
-test
-
+```
+Python3 run_transformer.py
+```
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
