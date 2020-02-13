@@ -2,28 +2,28 @@
 
 One Paragraph of project description goes here
 
-## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-* numpy
-* tensorflow version 1.14
-
-
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
+## Requirements
 ```
-Give an example
+Python3, Numpy, Tensorflow
 ```
 
+## Dataset
+
+* Our dataset can be downloaded from the below link
+
+* FMCW
+
+* MIMO
+
+## Running code
+
+### FMCW
+
+test
+### MIMO
+
+test
 
 ## License
 
