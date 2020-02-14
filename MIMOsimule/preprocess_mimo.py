@@ -38,6 +38,7 @@ def make_inputs_and_labels(input_path, label_path):
 
 class data():
     def __init__(self, use_median_filter=True, train=True):
+        self.use_median_filter = use_median_filter
         self.input_path = make_input()
         self.label_path = make_label()
         self.input_path = self.input_path[:1000]
@@ -46,7 +47,7 @@ class data():
         self.inputs = np.array(self.inputs)
         self.labels = np.array(self.labels)
         self.inputs, self.labels = self.normalize_array(self.inputs, self.labels)
-        self.use_median_filter = use_median_filter
+        
         if use_median_filter:
             print('Use median filter')
         else:
