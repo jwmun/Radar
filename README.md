@@ -1,6 +1,6 @@
 # Radar
 
-One Paragraph of project description goes here
+FMCW, OFDM radar simulator tensorflow code
 
 
 ## Requirements
