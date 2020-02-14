@@ -39,11 +39,10 @@ class Radar:
         print(FLAGS.use_fftloss)
         print(type(FLAGS.use_fftloss))
         self.save_path = FLAGS.save_path
-
+        
         if make_data:
             # IF interference is high, use median filter
             self.datas = preprocess_mimo.data(use_median_filter=FLAGS.median_filter)
-            self.max_length = self.datas.max_length
             self.data_length = len(self.datas.inputs)
             self.train_inputs = self.datas.inputs[:self.data_length - FLAGS.valid_size]
             self.train_labels = self.datas.labels[:self.data_length - FLAGS.valid_size]
@@ -53,9 +52,8 @@ class Radar:
             print('train size is', self.train_inputs.shape)
             print('valid size is', self.valid_inputs.shape)
 
-        self.max_length = 416
-        self.signal_input = tf.placeholder(tf.float32, [None, self.max_length])
-        self.signal_label = tf.placeholder(tf.float32, [None, self.max_length])
+        self.signal_input = tf.placeholder(tf.float32, [None, 256])
+        self.signal_label = tf.placeholder(tf.float32, [None, 256])
         # self.fft_signal_label = tf.placeholder(tf.float32, [None, self.max_length])
         self.rnn_keep_prob = tf.placeholder(tf.float32)
         self.dense_drop_rate = tf.placeholder(tf.float32)

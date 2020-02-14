@@ -42,6 +42,7 @@ class data():
         self.inputs = np.array(self.inputs)
         self.labels = np.array(self.labels)
         self.inputs, self.labels = self.normalize_array(self.inputs, self.labels)
+        self.use_median_filter = use_median_filter
         if use_median_filter:
             print('Use median filter')
         else:
@@ -72,8 +73,8 @@ class data():
     def normalize_array(self, inputs, labels):
         norm_input = []
         norm_label = []
-
-        inputs = self.median_filter(inputs)
+        if self.use_median_filter:
+            inputs = self.median_filter(inputs)
         for idx in range(len(inputs)):
             norm_val = np.sqrt(np.sum(inputs[idx]**2))
 

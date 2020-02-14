@@ -16,12 +16,12 @@ def make_data(filepath):
 
 
 def make_input():
-    files = sorted(glob.glob('./data/mimo_data_input/real_interference*'))
+    files = sorted(glob.glob('../../data/simule_input_test/real_interference*'))
     return files
 
 
 def make_label():
-    files = sorted(glob.glob('./data/mimo_data_label/real_interference_label*'))
+    files = sorted(glob.glob('../../data/simule_label_test/real_interference_label*'))
     return files
 
 
@@ -37,7 +37,7 @@ def make_inputs_and_labels(input_path, label_path):
 
 
 class data():
-    def __init__(self, use_median_filter=True, train=True)::
+    def __init__(self, use_median_filter=True, train=True):
         self.input_path = make_input()
         self.label_path = make_label()
         self.input_path = self.input_path[:1000]
@@ -46,18 +46,22 @@ class data():
         self.inputs = np.array(self.inputs)
         self.labels = np.array(self.labels)
         self.inputs, self.labels = self.normalize_array(self.inputs, self.labels)
-
+        self.use_median_filter = use_median_filter
+        if use_median_filter:
+            print('Use median filter')
+        else:
+            print('Not use median filter')
         if train:
             x = list(range(len(self.inputs)))
             random.shuffle(x)
             self.inputs = self.inputs[x]
             self.labels = self.labels[x]
-
+            '''
             with open('mimo_data_inputs.pickle', 'wb') as f:
                 pickle.dump(self.inputs, f)
             with open('mimo_data_labels.pickle', 'wb') as f:
                 pickle.dump(self.labels, f)
-
+            '''
 
         print('finished loading data!!')
     def median_filter(self, inputs):
@@ -70,7 +74,8 @@ class data():
         norm_input = []
         norm_label = []
 
-        inputs = self.median_filter(inputs)
+        if self.use_median_filter:
+            inputs = self.median_filter(inputs)
         for idx in range(len(inputs)):
             norm_val = np.sqrt(np.sum(inputs[idx]**2))
 
