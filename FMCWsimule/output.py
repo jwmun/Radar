@@ -26,11 +26,11 @@ with tf.Session(config=config) as sess:
             print(signal_index, random_index)
 
             def get_max_value(inputs):
-                mean_value = []
+                max_value = []
                 for signal in inputs:
-                    mean_val = np.sqrt(np.sum([i*i for i in signal]))
-                    mean_value.append(mean_val)
-                return mean_value
+                    max_val = np.sqrt(np.sum([i*i for i in signal]))
+                    max_value.append(max_val)
+                return max_value
 
 
             def make_data(filepath):
@@ -68,17 +68,28 @@ with tf.Session(config=config) as sess:
             for i in range(8):
                 real_max.append(get_max_value(real_data[i]))
                 imag_max.append(get_max_value(imag_data[i]))
-
+            
+            def median_filter(inputs, use=True):
+                if use:
+                    for idx, signal in enumerate(inputs):
+                        thres = 100 * np.median(np.abs(signal))
+                        signal[np.abs(signal) > thres] = 0
+                        inputs[idx] = signal
+                    return inputs
+                else:
+                    return inputs
 
             def normalize(real_input, imag_input):
-                norm_input = []
-                norm_label = []
+                norm_real = []
+                norm_imag = []
                 #max_value = self.get_max_value(inputs)
+                real_input = median_filter(real_input)
+                imag_input = median_filter(imag_input)
                 for channel in range(8):
                     for ramp in range(75):
-                        norm_input.append([float(i)/real_max[channel][ramp] for i in real_input[channel][ramp]])
-                        norm_label.append([float(i)/imag_max[channel][ramp] for i in imag_input[channel][ramp]])
-                return norm_input, norm_label
+                        norm_real.append([float(i)/real_max[channel][ramp] for i in real_input[channel][ramp]])
+                        norm_imag.append([float(i)/imag_max[channel][ramp] for i in imag_input[channel][ramp]])
+                return norm_real, norm_imag
 
             norm_real, norm_imag = normalize(real_data, imag_data)
             matlab_real = np.reshape(np.array(pad_data(norm_real, max_length)), (8, 75, max_length))
