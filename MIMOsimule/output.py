@@ -23,13 +23,15 @@ def make_inputs(input_path):
         inputs.extend(input_data)
     return np.array(inputs)
 
-def median_filter(inputs):
-    print(inputs.shape)
-    for idx, signal in enumerate(inputs):
-        thres = 100 * np.median(np.abs(signal))
-        signal[np.abs(signal) > thres] = 0
-        inputs[idx] = signal
-    return inputs
+def median_filter(inputs, use=True):
+    if use:
+        for idx, signal in enumerate(inputs):
+            thres = 100 * np.median(np.abs(signal))
+            signal[np.abs(signal) > thres] = 0
+            inputs[idx] = signal
+        return inputs
+    else:
+        return inputs
 
 
 def normalize_array(inputs):
