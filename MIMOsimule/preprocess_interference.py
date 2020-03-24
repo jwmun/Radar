@@ -16,12 +16,12 @@ def make_data(filepath):
 
 
 def make_input():
-    files = sorted(glob.glob('../../data/simule_input_test/real_interference*'))
+    files = sorted(glob.glob('./data/Input/simule_input/real_interference*'))
     return files
 
 
 def make_label():
-    files = sorted(glob.glob('../../data/simule_label_test/real_interference_label*'))
+    files = sorted(glob.glob('./data/Label/simule_label/real_interference_label*'))
     return files
 
 
@@ -41,13 +41,15 @@ class data():
         self.use_median_filter = use_median_filter
         self.input_path = make_input()
         self.label_path = make_label()
-        self.input_path = self.input_path[:1000]
-        self.label_path = self.label_path[:1000]
         self.inputs, self.labels = make_inputs_and_labels(self.input_path, self.label_path)
+        self.inputs, self.labels = self.normalize(self.inputs, self.labels)
         self.inputs = np.array(self.inputs)
         self.labels = np.array(self.labels)
-        self.inputs, self.labels = self.normalize(self.inputs, self.labels)
 
+        with open('max_value.pickle', 'wb') as f:
+            pickle.dump(self.max_value, f)
+        with open('max_length.pickle', 'wb') as f:
+            pickle.dump(self.max_length, f)
 
         if train:
             x = list(range(len(self.inputs)))
@@ -57,6 +59,12 @@ class data():
             self.inputs = self.input_to_array(self.inputs)
             self.labels = self.input_to_array(self.labels)
 
+            with open('inputs_array.pickle', 'wb') as f:
+                pickle.dump(self.inputs, f)
+            with open('labels_array.pickle', 'wb') as f:
+                pickle.dump(self.labels, f)
+
+            #print('This is test', self.inputs.shape)
             '''
             with open('inputs.pickle', 'wb') as f:
                 pickle.dump(self.inputs, f)

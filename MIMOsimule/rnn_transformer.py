@@ -22,7 +22,7 @@ flags.DEFINE_boolean('restore', False, 'use restore')
 flags.DEFINE_boolean('use_fftloss', False, 'use fft loss')
 flags.DEFINE_float('fft_coefficient', 0.1, 'learning rate')
 flags.DEFINE_string('gpu_number', "1", 'determine what gpu to use')
-flags.DEFINE_string('save_path', './distance_save/model_newal', 'save path')
+flags.DEFINE_string('save_path', '../../save_data/model_mimo', 'save path')
 flags.DEFINE_string('mod', 'train', 'train, null mod')
 flags.DEFINE_integer('num_layer', 2, 'number of transformer layer')
 flags.DEFINE_integer('num_head', 1, 'number of transformer head')
@@ -30,7 +30,7 @@ flags.DEFINE_integer('num_dff', 128, 'number of transformer dff')
 flags.DEFINE_integer('drop_rate', 0, 'Drop out rate')
 flags.DEFINE_float('rnn_keep_prob', 1, 'rnn drop out rate')
 flags.DEFINE_boolean('make_data', True, 'Determine make data')
-flags.DEFINE_boolean('median_filter', True, 'Determine make data')
+flags.DEFINE_boolean('median_filter', False, 'Determine make data')
 os.environ["CUDA_VISIBLE_DEVICES"] = FLAGS.gpu_number
 
 
@@ -51,9 +51,9 @@ class Radar:
             print('all data size is', self.data_length)
             print('train size is', self.train_inputs.shape)
             print('valid size is', self.valid_inputs.shape)
-
-        self.signal_input = tf.placeholder(tf.float32, [None, 256])
-        self.signal_label = tf.placeholder(tf.float32, [None, 256])
+    
+        self.signal_input = tf.placeholder(tf.float32, [None, self.datas.inputs.shape[1], self.datas.inputs.shape[2]])
+        self.signal_label = tf.placeholder(tf.float32, [None, self.datas.inputs.shape[1], self.datas.inputs.shape[2]])
         # self.fft_signal_label = tf.placeholder(tf.float32, [None, self.max_length])
         self.rnn_keep_prob = tf.placeholder(tf.float32)
         self.dense_drop_rate = tf.placeholder(tf.float32)
@@ -68,12 +68,11 @@ class Radar:
             self.train()
 
     def SelfAttentionModel(self):
-        new_input = tf.expand_dims(self.signal_input, axis=2)
 
         with tf.variable_scope('GOU1'):
             cellfw = tf.nn.rnn_cell.GRUCell(FLAGS.hidden_size // 2)
             cellbw = tf.nn.rnn_cell.GRUCell(FLAGS.hidden_size // 2)
-            output, _ = tf.nn.bidirectional_dynamic_rnn(cellfw, cellbw, new_input, dtype=tf.float32)
+            output, _ = tf.nn.bidirectional_dynamic_rnn(cellfw, cellbw, self.signal_input, dtype=tf.float32)
         rnn_output = tf.concat(output, 2)
  
         sample_encoder = encode_model.Encoder(num_layers=FLAGS.num_layer, d_model=1,
@@ -100,27 +99,13 @@ class Radar:
         concat_output2 = self.layernorm1(concat_output2)
 
         with tf.variable_scope('GOU3'):
-            cellfw = tf.nn.rnn_cell.GRUCell(FLAGS.hidden_size // 2)
-            cellbw = tf.nn.rnn_cell.GRUCell(FLAGS.hidden_size // 2)
+            cellfw = tf.nn.rnn_cell.GRUCell(8)
+            cellbw = tf.nn.rnn_cell.GRUCell(8)
             output, _ = tf.nn.bidirectional_dynamic_rnn(cellfw, cellbw, concat_output2, dtype=tf.float32)
-        rnn_output3 = tf.concat(output, 2)
-
-        sample_encoder3 = encode_model.Encoder(num_layers=FLAGS.num_layer, d_model=1,
-                                              num_heads=FLAGS.num_head,
-                                              dff=FLAGS.num_dff)
-        sample_encoder_output3 = sample_encoder3(rnn_output3, training=False, mask=None)
-
-        concat_output3 = tf.concat([rnn_output3, sample_encoder_output3], axis=2)
-
-
-        concat_output3 = self.layernorm1(concat_output3)
-        drop_layer = tf.layers.dropout(concat_output3, rate=self.dense_drop_rate)
-        res_output2_expand = tf.expand_dims(drop_layer, axis=3)
-
-        average_layer3 = tf.layers.average_pooling2d(res_output2_expand, [1, res_output2_expand.shape[2]], strides=[1, 1])
-        squeeze_layer3 = tf.squeeze(average_layer3)
-        fft_signal = tf.math.l2_normalize(tf.abs(tf.signal.rfft(squeeze_layer3)), axis=1)
-        return squeeze_layer3, fft_signal
+        rnn_output3 = (output[0] + output[1])/2
+ 
+        fft_signal = tf.math.l2_normalize(tf.abs(tf.signal.rfft(rnn_output3)), axis=1)
+        return rnn_output3, fft_signal
 
     def optimizer(self, model):
 
