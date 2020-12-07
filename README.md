@@ -32,6 +32,7 @@ Python3 run_transformer.py
 ```
 
 ## Citing
+```
 @inproceedings{mun2020automotive,
   title={Automotive Radar Signal Interference Mitigation Using RNN with Self Attention},
   author={Mun, Jiwoo and Ha, Seokhyeon and Lee, Jungwoo},
@@ -40,7 +41,7 @@ Python3 run_transformer.py
   year={2020},
   organization={IEEE}
 }
-
+```
 ## Acknowledgments
 
 This work is in part supported by Bio-Mimetic Robot Research Center Funded by Defense
