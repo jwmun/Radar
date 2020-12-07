@@ -31,7 +31,8 @@ Python3 run_transformer.py
 Python3 run_transformer.py
 ```
 
-## Citing
+## Citation
+If you use any part of this code in your research, please cite our paper:
 ```
 @inproceedings{mun2020automotive,
   title={Automotive Radar Signal Interference Mitigation Using RNN with Self Attention},
