@@ -31,7 +31,26 @@ Python3 run_transformer.py
 Python3 run_transformer.py
 ```
 
-
+## Citation
+If you use any part of this code in your research, please cite our paper:
+```
+@inproceedings{mun2020automotive,
+  title={Automotive Radar Signal Interference Mitigation Using RNN with Self Attention},
+  author={Mun, Jiwoo and Ha, Seokhyeon and Lee, Jungwoo},
+  booktitle={ICASSP 2020-2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
+  pages={3802--3806},
+  year={2020},
+  organization={IEEE}
+}
+```
 ## Acknowledgments
 
+This work is in part supported by Bio-Mimetic Robot Research Center Funded by Defense
+Acquisition Program Administration, Agency for Defense Development (UD190018ID),
+MSIT-IITP grant (No.2019-0-01367, BabyMind), Grant(UD190031RD) from Defense
+Acquisition Program Administration(DAPA) and Agency for Defense Development(ADD),
+INMAC, and BK21-plus.
 
+## License
+
+MIT License
