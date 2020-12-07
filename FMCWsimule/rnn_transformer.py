@@ -15,7 +15,7 @@ flags.DEFINE_integer('batch_size', 128, 'batch size')
 flags.DEFINE_integer('all_data_size', 150000, 'all data size')
 flags.DEFINE_integer('train_size', 148000, 'train size')
 flags.DEFINE_integer('valid_size', 1000, 'valid_size')
-flags.DEFINE_integer('num_epoch', 100, 'number of epoch')
+flags.DEFINE_integer('num_epoch', 1000, 'number of epoch')
 flags.DEFINE_boolean('use_clipping', True, 'use clipping')
 flags.DEFINE_boolean('use_decay', False, 'exponential decay')
 flags.DEFINE_boolean('restore', False, 'use restore')
@@ -31,6 +31,7 @@ flags.DEFINE_integer('drop_rate', 0, 'Drop out rate')
 flags.DEFINE_float('rnn_keep_prob', 1, 'rnn drop out rate')
 flags.DEFINE_boolean('make_data', True, 'Determine make data')
 flags.DEFINE_boolean('median_filter', False, 'Determine make data')
+flags.DEFINE_integer('model', 0, 'model_number')
 os.environ["CUDA_VISIBLE_DEVICES"] = FLAGS.gpu_number
 
 
@@ -62,8 +63,12 @@ class Radar:
         self.training = tf.placeholder(tf.bool)
 
         self.layernorm1 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
-
-        model = self.SelfAttentionModel()
+        if FLAGS.model == 0:
+            model = self.SelfAttentionModel()
+            self.save_path = '../../save_data/model_transformer'
+        if FLAGS.model == 1:
+            model = self.SelfAttentionModel2()
+            self.save_path = '../../save_data/model_base'
         self.optimizer(model)
         self.saver = tf.train.Saver()
         if mod == 'train':
@@ -113,7 +118,37 @@ class Radar:
         squeeze_layer3 = tf.squeeze(average_layer3)
         fft_signal = tf.math.l2_normalize(tf.abs(tf.signal.rfft(squeeze_layer3)), axis=1)
         return squeeze_layer3, fft_signal
+    
+    def SelfAttentionModel2(self):
+        new_input = tf.expand_dims(self.signal_input, axis=2)
 
+        with tf.variable_scope('GOU1'):
+            cellfw = tf.nn.rnn_cell.GRUCell(FLAGS.hidden_size // 2)
+            cellbw = tf.nn.rnn_cell.GRUCell(FLAGS.hidden_size // 2)
+            output, _ = tf.nn.bidirectional_dynamic_rnn(cellfw, cellbw, new_input, dtype=tf.float32)
+        rnn_output = tf.concat(output, 2)
+ 
+
+        with tf.variable_scope('GOU2'):
+            cellfw = tf.nn.rnn_cell.GRUCell(FLAGS.hidden_size // 2)
+            cellbw = tf.nn.rnn_cell.GRUCell(FLAGS.hidden_size // 2)
+            output, _ = tf.nn.bidirectional_dynamic_rnn(cellfw, cellbw, rnn_output, dtype=tf.float32)
+        rnn_output2 = tf.concat(output, 2)
+
+
+        with tf.variable_scope('GOU3'):
+            cellfw = tf.nn.rnn_cell.GRUCell(FLAGS.hidden_size // 2)
+            cellbw = tf.nn.rnn_cell.GRUCell(FLAGS.hidden_size // 2)
+            output, _ = tf.nn.bidirectional_dynamic_rnn(cellfw, cellbw, rnn_output2, dtype=tf.float32)
+        rnn_output3 = tf.concat(output, 2)
+
+        
+        rnn_output3 = tf.expand_dims(rnn_output3, axis=3)
+        average_layer3 = tf.layers.average_pooling2d(rnn_output3, [1, rnn_output3.shape[2]], strides=[1, 1])
+        squeeze_layer3 = tf.squeeze(average_layer3)
+        fft_signal = tf.math.l2_normalize(tf.abs(tf.signal.rfft(squeeze_layer3)), axis=1)
+        return squeeze_layer3, fft_signal
+    
     def optimizer(self, model):
 
         if FLAGS.use_clipping:
